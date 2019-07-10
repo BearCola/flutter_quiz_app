@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_quiz_app/question.dart';
-import 'package:flutter_quiz_app/answer.dart';
+import 'package:flutter_quiz_app/quiz.dart';
+import 'package:flutter_quiz_app/result.dart';
 
 void main() => runApp(MyApp());
 
@@ -12,30 +12,94 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  final questions = const [
+  final _questions = const [
     {
       'questionText': "What's your favorite color?",
-      'answers': ["Black", "Red", "Green", "White"],
+      'answers': [
+        {
+          'text': "Black",
+          'score': 10,
+        },
+        {
+          'text': "Red",
+          'score': 5,
+        },
+        {
+          'text': "Green",
+          'score': 3,
+        },
+        {
+          'text': "White",
+          'score': 1,
+        },
+      ],
     },
     {
       'questionText': "What's your favorite animal?",
-      'answers': ["Rabbit", "Snake", "Elephant", "Lion"],
+      'answers': [
+        {
+          'text': "Rabbit",
+          'score': 3,
+        },
+        {
+          'text': "Snake",
+          'score': 11,
+        },
+        {
+          'text': "Elephant",
+          'score': 5,
+        },
+        {
+          'text': "Lion",
+          'score': 7,
+        },
+      ],
     },
     {
       'questionText': "Who's your favorite instructor?",
-      'answers': ["Max", "Max", "Max", "Max"],
+      'answers': [
+        {
+          'text': "Max",
+          'score': 1,
+        },
+        {
+          'text': "Max",
+          'score': 1,
+        },
+        {
+          'text': "Max",
+          'score': 1,
+        },
+        {
+          'text': "Max",
+          'score': 1,
+        },
+      ],
     },
   ];
 
   var _questionIndex = 0;
+  var _totalScore = 0;
 
-  void _answerQuestion() {
-    if (_questionIndex < questions.length - 1) {
-      setState(() {
-        _questionIndex = _questionIndex + 1;
-      });
+  void _resetQuiz() {
+    setState(() {
+      _questionIndex = 0;
+      _totalScore = 0;
+    });
+  }
 
-      print(_questionIndex);
+  void _answerQuestion(int score) {
+    _totalScore += score;
+    print(_totalScore);
+
+    setState(() {
+      _questionIndex = _questionIndex + 1;
+    });
+
+    if (_questionIndex < _questions.length) {
+      print("We have more questions");
+    } else {
+      print("No more questions!");
     }
   }
 
@@ -46,17 +110,13 @@ class _MyAppState extends State<MyApp> {
         appBar: AppBar(
           title: Text("Heloo"),
         ),
-        body: Column(
-          children: <Widget>[
-            Question(
-              questions[_questionIndex]['questionText'],
-            ),
-            ...(questions[_questionIndex]['answers'] as List<String>)
-                .map((answers) {
-              return Answer(_answerQuestion, answers);
-            }).toList()
-          ],
-        ),
+        body: _questionIndex < _questions.length
+            ? Quiz(
+                answerQuestion: _answerQuestion,
+                questions: _questions,
+                questionIndex: _questionIndex,
+              )
+            : Result(_totalScore, _resetQuiz),
       ),
     );
   }
